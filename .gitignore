@@ -1,0 +1,54 @@
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+venv/
+env/
+.env
+
+# Jupyter
+*.ipynb_checkpoints
+
+# 模型与数据（体积大，不入库）
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.ckpt
+*.h5
+*.onnx
+*.gguf
+
+# 数据文件（按需放行小样本）
+data/raw/
+data/processed/
+*.parquet
+*.csv.gz
+*.zip
+*.tar.gz
+
+# 日志与输出
+logs/
+runs/
+wandb/
+outputs/
+checkpoints/
+
+# 编辑器临时
+*~
+.~lock.*
