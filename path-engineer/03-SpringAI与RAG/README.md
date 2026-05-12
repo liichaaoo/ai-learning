@@ -44,24 +44,22 @@
 
 ---
 
-### Week 2：Function Calling + 多模型
+### Week 2：Function Calling + 多模型 ✅ 已开放
 
-- [ ] **Function Calling**
-  - `@Tool` 注解
-  - `@ToolParam` 参数描述
-  - 把现有业务方法暴露给 LLM
+> 📘 **完整 5 天教程** → [`Week2-FunctionCalling与多模型/README.md`](./Week2-FunctionCalling与多模型/README.md)
+> 📦 **代码骨架** → [`项目/02-multi-tools/`](./项目/02-multi-tools/)（含运维助手毕业 Demo）
 
-- [ ] **多模型接入**
-  - OpenAI（标杆）
-  - 通义千问（国产首选）
-  - Claude
-  - Ollama（本地模型）
+5 天计划速览：
 
-- [ ] **多模型路由**
-  - 同一个 Spring 工程注入多个 ChatModel
-  - 按场景路由（成本优化）
+| Day | 主题 | 教程 |
+|-----|------|------|
+| Day 1 | Function Calling 原理 + Hello Tool | [📖 Day1](./Week2-FunctionCalling与多模型/Day1-FunctionCalling原理.md) |
+| Day 2 | 多工具协作 + 参数校验 | [📖 Day2](./Week2-FunctionCalling与多模型/Day2-多工具协作.md) |
+| Day 3 | 多模型接入（通义 + Ollama）| [📖 Day3](./Week2-FunctionCalling与多模型/Day3-多模型接入.md) |
+| Day 4 | 多模型路由策略 + 降级 | [📖 Day4](./Week2-FunctionCalling与多模型/Day4-多模型路由.md) |
+| Day 5 | 整合 Demo：智能运维助手 ⭐ | [📖 Day5](./Week2-FunctionCalling与多模型/Day5-整合Demo.md) |
 
-📦 **产出**：能调用多个工具的智能助手 demo
+📦 **产出**：`项目/02-multi-tools/` —— AI 运维助手，能查监控、分析问题、执行操作（简历级）
 
 ---
 
