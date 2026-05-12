@@ -20,29 +20,27 @@
 
 ## 🗓️ 6 周计划
 
-### Week 1：Spring AI 基础
+### Week 1：Spring AI 基础 ✅ 已开放
 
-- [ ] **环境准备**
-  - JDK 17+ 安装
-  - IntelliJ IDEA 配置
-  - 申请 API Key（推荐通义千问，免费额度大）
+> 📘 **完整 5 天教程** → [`Week1-SpringAI基础/README.md`](./Week1-SpringAI基础/README.md)
+> 📦 **代码骨架** → [`项目/01-helloai/`](./项目/01-helloai/)（开箱即用，只需填 API Key）
 
-- [ ] **Hello World**
-  - Spring Boot 3 + Spring AI 依赖
-  - `ChatClient` 基础用法
-  - 流式响应（SSE + Reactor Flux）
+5 天计划速览：
 
-- [ ] **进阶用法**
-  - Prompt 模板
-  - System Prompt
-  - 输出转 Java 对象（`.entity(Class)`）
+| Day | 主题 | 教程 |
+|-----|------|------|
+| Day 1 | 环境准备 + 申请通义千问 API Key | [📖 Day1](./Week1-SpringAI基础/Day1-环境准备.md) |
+| Day 2 | Hello World（跑起第一个 Spring AI）| [📖 Day2](./Week1-SpringAI基础/Day2-HelloWorld.md) |
+| Day 3 | 流式响应（SSE，像 ChatGPT）| [📖 Day3](./Week1-SpringAI基础/Day3-流式响应.md) |
+| Day 4 | Prompt 工程（System + 模板）| [📖 Day4](./Week1-SpringAI基础/Day4-Prompt工程.md) |
+| Day 5 | 结构化输出 + 整合 Demo | [📖 Day5](./Week1-SpringAI基础/Day5-结构化输出与整合.md) |
 
 #### 📚 资源
 - [Spring AI 官方文档](https://docs.spring.io/spring-ai/reference/)
 - [SpringAI 入门笔记](./笔记/SpringAI入门.md)（已有）
 - [Spring AI Examples](https://github.com/spring-projects/spring-ai-examples)
 
-📦 **产出**：第一个 Spring AI 智能客服 demo（项目 [`01-helloai/`](./项目/01-helloai/)）
+📦 **产出**：`项目/01-helloai/` —— 能跑、能演示、可以写进简历的 Spring AI Hello World
 
 ---
 

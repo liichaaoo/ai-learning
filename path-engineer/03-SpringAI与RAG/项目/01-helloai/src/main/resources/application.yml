@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: helloai
+
+  ai:
+    openai:
+      # 通义千问兼容 OpenAI 协议的 Base URL
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      # 从环境变量读取，避免硬编码
+      api-key: ${DASHSCOPE_API_KEY}
+
+      chat:
+        options:
+          model: qwen-turbo
+          temperature: 0.7
+
+logging:
+  level:
+    org.springframework.ai: INFO
