@@ -12,7 +12,7 @@ print("=" * 50)
 print("Day 2 练习")
 print("=" * 50)
 
-
+from collections import Counter
 # ----------------------------------------------------------------------
 # 题 1：列表基础（5 分钟）
 # ----------------------------------------------------------------------
@@ -25,7 +25,11 @@ print("=" * 50)
 #   1.5 打印反转后的列表（用切片 [::-1]）
 print("\n--- 题 1：列表基础 ---")
 nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
-# TODO
+print(len(nums))
+print(nums[0],nums[-1])
+print(sorted(nums))
+print(len(set(nums)))
+print(nums[::-1])
 
 
 # ----------------------------------------------------------------------
@@ -40,7 +44,11 @@ nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
 #   2.5 反转列表
 print("\n--- 题 2：切片实战 ---")
 scores = [85, 92, 78, 90, 65, 88, 75, 95, 80, 70]
-# TODO
+print(scores[:3])
+print(scores[-3:])
+print(scores[3:7])
+print(scores[::2])
+print(scores[::-1])
 
 
 # ----------------------------------------------------------------------
@@ -58,9 +66,11 @@ words = ["hello", "world", "python", "rocks"]
 sizes = ["S", "M", "L"]
 colors = ["red", "blue"]
 test_scores = [85, 60, 92, 70, 88, 50, 95]
-# TODO
-
-
+print([i * i for i in nums_for_3])
+print([i for i in nums_for_3 if i % 2 == 0])
+print([word.upper() for word in words])
+print([(size,color) for size in sizes for color in colors])
+print([f"{s}:优秀" if s >= 80 else f"{s}:良好" for s in test_scores])
 # ----------------------------------------------------------------------
 # 题 4：字典基础（10 分钟）
 # ----------------------------------------------------------------------
@@ -79,7 +89,15 @@ student_scores = {
 #   4.4 找出最高分的学生姓名（提示：max(d, key=d.get)）
 #   4.5 用 for + .items() 遍历，打印 "Alice 得了 85 分" 这样的格式
 print("\n--- 题 4：字典基础 ---")
-# TODO
+
+print(student_scores.get("Frank",0))
+student_scores["Grace"]=88
+print(student_scores)
+print(sum(student_scores.values())/len(student_scores.values()))
+# print(max(student_scores,key=lambda name:student_scores[name]))
+print(max(student_scores, key = student_scores.get))
+for name,score in student_scores.items():
+	print(f"{name} 得了 {score} 分")
 
 
 # ----------------------------------------------------------------------
@@ -90,7 +108,9 @@ print("\n--- 题 4：字典基础 ---")
 #   5.2 创建一个新字典，所有分数 +5（鼓励）
 #   5.3 创建一个反向字典：分数 -> 学生名（假设分数不重复）
 print("\n--- 题 5：字典推导式 ---")
-# TODO
+print({name:score for name,score in student_scores.items() if score >= 60})
+print({name:(score+5) for name,score in student_scores.items()})
+print({score:name for name,score in student_scores.items()})
 
 
 # ----------------------------------------------------------------------
@@ -106,7 +126,9 @@ the fox is quick and clever
 # 6.2 用 collections.Counter 统计频率
 # 6.3 打印出现次数最多的 3 个单词及次数（提示：counter.most_common(3)）
 print("\n--- 题 6：单词频率 ---")
-# TODO
+counter = Counter(text.split())
+print(counter)
+print(counter.most_common(3))
 
 
 # ----------------------------------------------------------------------
@@ -123,7 +145,12 @@ job_required = {"java", "spring", "kafka", "kubernetes", "ai", "rag"}
 #   7.4 计算技能匹配度：交集大小 / 岗位需要数量（百分比）
 #   7.5 用 f-string 格式化输出，保留 1 位小数（如 "匹配度: 50.0%"）
 print("\n--- 题 7：集合运算 ---")
-# TODO
+
+print(fletcher_skills & job_required) # 交集
+print(fletcher_skills - job_required) # 差集
+print(job_required - fletcher_skills) # 反向差集
+print(f"{len(fletcher_skills & job_required)/len(job_required)*100:.1f}%")
+print(f"匹配度：{len(fletcher_skills & job_required)/len(job_required)*100:.1f}%")
 
 
 # ----------------------------------------------------------------------
@@ -132,18 +159,20 @@ print("\n--- 题 7：集合运算 ---")
 # 8.1 多变量赋值：交换两个变量的值
 print("\n--- 题 8：解包 ---")
 a, b = 100, 200
-# TODO: 一行代码交换 a 和 b
+a, b = b, a
+print(a, b)
 # print(a, b)  # 应该输出 200 100
 
 # 8.2 列表解包
 data = [1, 2, 3, 4, 5]
-# TODO: 用解包把第一个赋给 first，最后一个赋给 last，中间的赋给 middle
+first, *middle, last = data
+print(first,last,middle)
 # 期望：first=1, last=5, middle=[2, 3, 4]
 
 # 8.3 字典解包合并
 default_config = {"lr": 0.01, "batch_size": 32, "epochs": 10}
 user_config = {"batch_size": 64, "device": "cuda"}
-# TODO: 用 ** 合并两个字典，user_config 的值覆盖 default 的
+print({**default_config,**user_config})
 # 期望：{'lr': 0.01, 'batch_size': 64, 'epochs': 10, 'device': 'cuda'}
 
 
@@ -166,9 +195,13 @@ students = [
 #   9.4 找出总分最高的学生姓名
 #   9.5 计算所有学生数学的平均分
 
-# TODO
-
-
+print([student["name"] for student in students])
+print([student["name"] for student in students if student["age"] >=20])
+print({student["name"]:sum(student["scores"].values()) for student in students})
+# print(max({student["name"]:sum(student["scores"].values()) for student in students},key = {student["name"]:sum(student["scores"].values()) for student in students}.get))
+print(max(students, key=lambda s: sum(s["scores"].values()))["name"])
+# print({student["name"]:(sum(student["scores"].values())/len(student["scores"].values())) for student in students})
+print(sum(s["scores"]["math"] for s in students)/len(students))
 print("\n" + "=" * 50)
 print("Day 2 练习完成！")
 print("=" * 50)

@@ -28,7 +28,15 @@ print("=" * 50)
 # 用 f-string 输出，格式为：
 #   name = fletcher (类型: <class 'str'>)
 print("\n--- 题 1：变量与类型 ---")
-# TODO: 写在这里
+name = 'fletcherli'
+age = 30
+height = 1.75
+is_student = False
+
+print(f"name = {name} (类型: {type(name)})")
+print(f"age = {age} (类型:{type(age)})")
+print(f"height = {height} (类型:{type(height)})")
+print(f"is_student = {is_student} (类型: {type(is_student)})")
 
 
 # ----------------------------------------------------------------------
@@ -39,8 +47,9 @@ print("\n--- 题 1：变量与类型 ---")
 #   要求：千分位逗号、保留 2 位小数
 print("\n--- 题 2：f-string 格式化 ---")
 name = "fletcher"
-monthly_salary = 12345.67
-# TODO: 计算年薪并用 f-string 输出
+monthly_salary = 12345.6711
+
+print(f"{name}的月薪是 ¥{monthly_salary:,.2f} , 年薪 ¥{monthly_salary * 12:,.2f}")
 
 
 # ----------------------------------------------------------------------
@@ -53,8 +62,15 @@ monthly_salary = 12345.67
 #   - 其他打印数字本身
 # 预期输出：1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz
 print("\n--- 题 3：FizzBuzz ---")
-# TODO: 写一个 for 循环
-
+for i in range(1,16):
+	if i%3 == 0 and i%5 == 0:
+		print(f"FizzBuzz")
+	elif i%3 == 0:
+		print(f"Fizz")
+	elif i%5 == 0:
+		print(f"Buzz")
+	else:
+		print(i)
 
 # ----------------------------------------------------------------------
 # 题 4：enumerate + zip 实战（10 分钟）
@@ -67,8 +83,8 @@ print("\n--- 题 3：FizzBuzz ---")
 print("\n--- 题 4：enumerate + zip ---")
 employees = ["Alice", "Bob", "Charlie"]
 salaries = [15000, 18000, 22000]
-# TODO: 写一个 for 循环
-
+for i,(employee ,salarie) in enumerate(zip(employees,salaries),1):
+	print(f"{i}. {employee}:¥{salarie}")
 
 # ----------------------------------------------------------------------
 # 题 5：函数 + 默认参数（10 分钟）
@@ -83,12 +99,13 @@ salaries = [15000, 18000, 22000]
 #   calculate_price(100, 0.1)         # 90 * 1.13 = 101.7
 #   calculate_price(100, 0.1, 0.05)   # 90 * 1.05 = 94.5
 print("\n--- 题 5：函数 + 默认参数 ---")
-# TODO: 实现 calculate_price 函数
+def calculate_price(price,discount=0.0, tax=0.13):
+	return price * (1 - discount) * (1 + tax)
 
 # 调用测试（不要修改下面）
-# print(calculate_price(100))
-# print(calculate_price(100, 0.1))
-# print(calculate_price(100, 0.1, 0.05))
+print(calculate_price(100))
+print(calculate_price(100, 0.1))
+print(calculate_price(100, 0.1, 0.05))
 
 
 # ----------------------------------------------------------------------
@@ -100,11 +117,12 @@ print("\n--- 题 5：函数 + 默认参数 ---")
 #   print(small, big)  # 1 9
 # 提示：可以直接用内置 min() 和 max()
 print("\n--- 题 6：多返回值 ---")
-# TODO: 实现 get_min_max 函数
+def get_min_max(numbers):
+	return min(numbers),max(numbers)
 
 # 调用测试（不要修改下面）
-# small, big = get_min_max([3, 1, 4, 1, 5, 9, 2, 6])
-# print(f"最小值: {small}, 最大值: {big}")
+small, big = get_min_max([3, 1, 4, 1, 5, 9, 2, 6])
+print(f"最小值: {small}, 最大值: {big}")
 
 
 # ----------------------------------------------------------------------
@@ -119,17 +137,32 @@ print("\n--- 题 6：多返回值 ---")
 #     - __str__(self): 返回字符串 "BankAccount(owner=Alice, balance=1000)"
 # 测试见下方
 print("\n--- 题 7：类与对象 ---")
-# TODO: 实现 BankAccount 类
+class BankAccount:
+	def __init__(self,owner,initial_balance = 0):
+		self.owner = owner
+		self.balance = initial_balance
+
+	def deposit(self,amount):
+		self.balance += amount
+
+	def withdraw(self,amount):
+		if self.balance < amount:
+			print("余额不足")
+		else:
+			self.balance -= amount
+	
+	def __str__(self):
+		return f"BankAccount(owner={self.owner},balance={self.balance})"
 
 # 调用测试（不要修改下面）
-# account = BankAccount("Alice", 1000)
-# print(account)              # BankAccount(owner=Alice, balance=1000)
-# account.deposit(500)
-# print(account)              # BankAccount(owner=Alice, balance=1500)
-# account.withdraw(2000)      # 余额不足
-# print(account)              # BankAccount(owner=Alice, balance=1500)
-# account.withdraw(500)
-# print(account)              # BankAccount(owner=Alice, balance=1000)
+account = BankAccount("Alice", 1000)
+print(account)              # BankAccount(owner=Alice, balance=1000)
+account.deposit(500)
+print(account)              # BankAccount(owner=Alice, balance=1500)
+account.withdraw(2000)      # 余额不足
+print(account)              # BankAccount(owner=Alice, balance=1500)
+account.withdraw(500)
+print(account)              # BankAccount(owner=Alice, balance=1000)
 
 
 # ----------------------------------------------------------------------
@@ -148,11 +181,11 @@ print("\n--- 题 7：类与对象 ---")
 #   - max(scores, key=scores.get) 拿最大值的 key
 #   - [name for name, score in scores.items() if score >= 60]  ← 列表推导式（明天会学）
 print("\n--- 题 8：综合运用 ---")
-# TODO: 实现 analyze_scores 函数
-
+def analyze_scores(scores):
+	return dict(average = sum(scores.values())/len(scores),max_student = max(scores, key = scores.get),passed = [name for name, score in scores.items() if score >= 60])
 # 调用测试
-# result = analyze_scores({"Alice": 85, "Bob": 60, "Charlie": 90, "David": 45})
-# print(result)
+result = analyze_scores({"Alice": 85, "Bob": 60, "Charlie": 90, "David": 45})
+print(result)
 # 预期：{'average': 70.0, 'max_student': 'Charlie', 'passed': ['Alice', 'Bob', 'Charlie']}
 
 
