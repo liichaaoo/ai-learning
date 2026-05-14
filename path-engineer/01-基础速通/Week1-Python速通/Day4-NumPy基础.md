@@ -367,6 +367,224 @@ normalized = (data - mean) / std     # shape (100, 5)
 
 ---
 
+## 6.5 卡点专题：4 个最容易迷的 API ⭐⭐⭐
+
+> 这一节是从真实学习反馈整理出来的"4 大卡点"。
+> 如果你做练习题 7-9 卡住了，回来读这里。
+
+### 🧱 卡点 1：`axis=0` 和 `axis=1` 到底沿哪个方向？
+
+**最常见的混淆**。规则：
+
+```
+axis=0  ↓  纵向（结果"消除"行维度）
+axis=1  →  横向（结果"消除"列维度）
+```
+
+二维数组形状 `(rows, cols)`，做 `.sum(axis=N)` 时：
+- **`axis=N` 那个维度被"压扁"消失**
+
+```python
+arr = np.array([[1, 2, 3],
+                [4, 5, 6]])           # shape (2, 3)
+
+arr.sum(axis=0)   # shape (3,)        ← axis=0 消失，剩列方向 [5, 7, 9]
+arr.sum(axis=1)   # shape (2,)        ← axis=1 消失，剩行方向 [6, 15]
+```
+
+**记忆法**：
+
+| 场景 | 用 `axis=` |
+|------|-----------|
+| 对每一**行**做 reduce（每个样本算一个值）| `axis=1` |
+| 对每一**列**做 reduce（每个特征算一个值）| `axis=0` |
+
+例子（你常见到的 AI 用法）：
+```python
+logits.shape = (8, 5)             # 8 个样本，每行一个，5 个类别得分
+
+np.argmax(logits, axis=1)         # 每行选 top 类别 → shape (8,)
+np.argmax(logits, axis=0)         # 每列选 top 样本 → shape (5,)（很少这么干）
+```
+
+---
+
+### 🧱 卡点 2：`keepdims=True` 是干嘛的？
+
+```python
+arr = np.array([[1, 2, 3],
+                [4, 5, 6]])              # (2, 3)
+
+arr.sum(axis=1)                          # shape (2,)      ← 一维
+arr.sum(axis=1, keepdims=True)           # shape (2, 1)    ← 列向量
+```
+
+#### 用在哪？
+
+**只要你 reduce 之后还要参与广播运算，几乎都要 `keepdims=True`**。
+
+举个 softmax 例子：
+
+```python
+logits = np.random.randn(8, 5)           # (8, 5)
+exp_x = np.exp(logits)                   # (8, 5)
+
+# ❌ 不 keepdims
+sums = exp_x.sum(axis=1)                 # (8,) 一维
+exp_x / sums                             # 报错：(8,5) 和 (8,) 不能广播
+
+# ✅ keepdims
+sums = exp_x.sum(axis=1, keepdims=True)  # (8, 1)
+exp_x / sums                             # ✅ (8,5) / (8,1) 广播成 (8,5)
+```
+
+#### 为什么广播规则是这样
+
+NumPy 广播**从右往左**对齐维度：
+
+```
+(8, 5)
+   (8,)        ← 不 keepdims 时，对齐 5 vs 8 → 不匹配 ❌
+─────
+(8, 5)
+(8, 1)        ← keepdims 时，5 vs 1 → 1 自动复制 5 份 ✅
+─────
+(8, 5)
+```
+
+**一句话**：`keepdims=True` 让 reduce 后的维度变成 `1`（不是消失），这样广播能继续工作。
+
+---
+
+### 🧱 卡点 3：`np.eye(K)[labels]` 为什么能做 one-hot？
+
+#### 第 1 步：`np.eye(K)` = 单位矩阵
+
+```python
+np.eye(5)
+# array([[1., 0., 0., 0., 0.],   ← 第 0 行 = 类别 0 的 one-hot
+#        [0., 1., 0., 0., 0.],   ← 第 1 行 = 类别 1 的 one-hot
+#        [0., 0., 1., 0., 0.],
+#        [0., 0., 0., 1., 0.],
+#        [0., 0., 0., 0., 1.]])
+```
+
+🤯 关键观察：**单位矩阵的第 i 行就是类别 i 的 one-hot 向量**！
+
+#### 第 2 步：花式索引（fancy indexing）
+
+NumPy 允许用一个**数组**作为下标，按这个数组**一次性挑多行**：
+
+```python
+arr = np.array([10, 20, 30, 40, 50])
+arr[[0, 2, 4]]    # array([10, 30, 50])
+arr[[2, 2, 0]]    # array([30, 30, 10])    ← 可重复
+```
+
+二维数组同理：
+```python
+I = np.eye(5)
+labels = np.array([0, 2, 1, 4, 3, 0])
+I[labels]
+# 等价于 [I[0], I[2], I[1], I[4], I[3], I[0]]
+# 结果 shape: (6, 5)
+```
+
+正好就是 one-hot 编码！
+
+#### 完整代码（生产可用）
+
+```python
+def one_hot(labels: np.ndarray, num_classes: int) -> np.ndarray:
+    return np.eye(num_classes)[labels]
+
+one_hot(np.array([0, 2, 1]), 5)
+# array([[1., 0., 0., 0., 0.],
+#        [0., 0., 1., 0., 0.],
+#        [0., 1., 0., 0., 0.]])
+```
+
+> 💡 这种"利用单位矩阵 + 花式索引"的写法，就是 **NumPy 思维替代 for 循环**的典型例子。
+
+---
+
+### 🧱 卡点 4：`np.newaxis` / `None` 加维度做"批量配对运算"
+
+最难但最实用的一招。
+
+#### 场景
+
+5 个测试样本 vs 100 个训练样本，**两两算距离**（5×100 = 500 对距离）。
+不写 for 循环怎么办？
+
+#### 核心技巧：扩展维度让广播帮忙
+
+```python
+X_test.shape    # (5, 4)
+X_train.shape   # (100, 4)
+
+# 给 X_test 在中间插一个维度
+X_test[:, np.newaxis, :].shape    # (5, 1, 4)
+# 等价: X_test[:, None, :]
+
+# 给 X_train 在最前插一个维度
+X_train[np.newaxis, :, :].shape   # (1, 100, 4)
+# 等价: X_train[None, :, :]
+
+# 两者相减，广播自动扩展
+diff = X_test[:, None, :] - X_train[None, :, :]
+diff.shape    # (5, 100, 4)
+```
+
+#### 广播过程图解
+
+```
+(5,   1, 4)   ← X_test[:, None, :]
+(1, 100, 4)   ← X_train[None, :, :]
+─────────────  逐维度对齐：
+                第 0 维  5 vs 1  → 5（1 复制成 5）
+                第 1 维  1 vs 100 → 100（1 复制成 100）
+                第 2 维  4 vs 4   → 4 ✅
+(5, 100, 4)
+```
+
+`diff[i, j, :]` 就是 "第 i 个测试样本 - 第 j 个训练样本" 的差向量。
+
+#### 然后算距离 + 找最近
+
+```python
+# 欧氏距离矩阵 (5, 100)
+distances = np.linalg.norm(diff, axis=2)
+# 等价: np.sqrt((diff ** 2).sum(axis=2))
+
+# 每行最近的训练样本下标
+nearest = np.argmin(distances, axis=1)   # (5,)
+
+# 取对应训练标签作为预测
+predictions = y_train[nearest]           # (5,)
+```
+
+**6 行代码 = 一个完整的 1-NN 分类器**。
+对应 for 循环写法约 15 行 + 慢 100 倍。
+
+> 💡 **`np.newaxis` 心法**：
+> "**我有 (5,4) 和 (100,4)，想要 (5,100) 的结果**" → 几乎一定是用 newaxis + 广播。
+> 这是 PyTorch、Transformer 里 attention 操作的同款思路。
+
+---
+
+### 卡点速查表
+
+| 现象 / 困惑 | 解法 |
+|------------|------|
+| 不知道 axis 选 0 还是 1 | 想"哪个维度被消除" |
+| 报错 "cannot be broadcast" | 检查形状，可能要 `keepdims=True` |
+| 想做 one-hot | `np.eye(K)[labels]` |
+| 想做 (M,) 和 (N,) 两两运算 | `arr1[:, None] op arr2[None, :]` → (M, N) |
+| 想算距离矩阵 | `np.linalg.norm(A[:,None,:] - B[None,:,:], axis=2)` |
+
+---
+
 ## 7. 实用函数速查（10 分钟）
 
 ```python

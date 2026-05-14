@@ -4,6 +4,15 @@
 
 ---
 
+## 📂 速查文档（卡住时看这里）
+
+| 文档 | 干嘛用的 |
+|------|---------|
+| [Jupyter与Conda环境搭建.md](./Jupyter与Conda环境搭建.md) | Notebook 环境搭建 |
+| [NumPy常见疑惑.md](./NumPy常见疑惑.md) | ⭐ NumPy 卡点速查（axis/广播/形状/softmax/one-hot 等）|
+
+---
+
 ## 子目录
 
 ```

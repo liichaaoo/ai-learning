@@ -163,7 +163,6 @@ print(np.where(scores >= 90, 'A', 'B'))
 # 题 6：广播（Broadcasting）（15 分钟）⭐⭐
 # ----------------------------------------------------------------------
 print("\n--- 题 6：广播 ---")
-
 # 6.1 给定一个 (3, 4) 矩阵和一个 (4,) 向量，相加（广播）
 M2 = np.arange(12).reshape(3, 4)
 v = np.array([10, 20, 30, 40])
@@ -172,6 +171,7 @@ print(M2 + v)
 
 # 6.2 数据归一化
 # 给定 100 个样本，每个样本 5 个特征
+print("\n--- 题 6.2：数据归一化 ---")
 data = np.random.randn(100, 5) * 10 + 5
 # 用广播实现：每个特征都变成 (x - 均值) / 标准差
 # 提示：用 axis=0 算每列的均值和 std
@@ -184,7 +184,8 @@ b = np.array([2, 4, 6])  # b = 2 * a，方向相同，应该相似度 = 1
 # 计算 a 和 b 的余弦相似度
 # 提示：cos = dot(a, b) / (norm(a) * norm(b))
 # 提示：np.linalg.norm(x)
-# TODO
+cos = np.dot(a,b)/(np.linalg.norm(a) * np.linalg.norm(b))
+print(cos)
 
 
 # ----------------------------------------------------------------------
@@ -197,12 +198,13 @@ batch_size = 8
 n_classes = 5
 np.random.seed(0)
 logits = np.random.randn(batch_size, n_classes)
+print(f"logits\n{logits}")
 print("logits shape:", logits.shape)
 
 # 7.1 找出每个样本预测得分最高的类别（argmax 沿 axis=1）
 # 期望结果是一个 shape (8,) 的数组
-
-# TODO
+p = np.argmax(logits,axis=1)
+print(p)
 
 
 # 7.2 模拟真实标签（也是 8 个样本的类别索引）
@@ -210,16 +212,21 @@ true_labels = np.array([0, 2, 1, 4, 3, 0, 2, 1])
 
 # 计算预测准确率（预测对的占比）
 # 提示：predictions == true_labels 然后 mean
-
-# TODO
+print("预测准确率：")
+print((p == true_labels).mean())
 
 
 # 7.3 把 logits 变成概率（softmax）
 # 公式：softmax(x_i) = exp(x_i) / sum(exp(x_j))
 # 沿 axis=1（每行总和应该是 1）
 # 提示：np.exp() 和 .sum(axis=1, keepdims=True)
-
-# TODO
+print("logits 变成概率（softmax）")
+exp_x = np.exp(logits)
+print(f"exp_x\n{exp_x}")
+probs = exp_x / exp_x.sum(axis = 1,keepdims = True)
+print(f"probs\n{probs}")
+print(probs.sum(axis = 1))
+print(probs.shape)
 
 
 # ----------------------------------------------------------------------
