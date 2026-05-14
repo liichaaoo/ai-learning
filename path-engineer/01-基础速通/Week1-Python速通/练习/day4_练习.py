@@ -8,7 +8,7 @@ Day 4 · NumPy 基础练习
 今天最重要：题 3（切片）、题 4（矩阵运算）、题 6（广播）。
 """
 
-import numpy as np
+import numpy as np  # pyright: ignore[reportMissingImports]
 
 print("=" * 50)
 print("Day 4 NumPy 练习")
@@ -27,7 +27,17 @@ np.random.seed(42)
 # 1.4 创建一个 0 到 1 之间均匀分布的 (3, 4) 矩阵
 # 1.5 创建一个 0 到 1 之间步长 0.1 的等差数列
 print("\n--- 题 1：创建 ndarray ---")
-# TODO
+print(np.array([i + 1 for i in range(10)]))
+print(np.zeros((3,3)))
+print(np.ones((5,5)))
+print(np.random.rand(3,4))
+print(np.linspace(0,1,11))
+
+print("orthes")
+print(np.random.randint(0,100,10))
+print(np.eye(3))
+print(np.arange(0,1,0.1))
+print(np.random.randn(5, 6))
 
 
 # ----------------------------------------------------------------------
@@ -42,9 +52,14 @@ print("\n--- 题 1：创建 ndarray ---")
 #   2.5 用 .T 转置一个 (3, 4) 矩阵，打印新 shape
 print("\n--- 题 2：shape 与 reshape ---")
 a = np.arange(24)
-# TODO
-
-
+print(a.shape)
+print(a.reshape(4,6))
+print(a.reshape(2,3,4))
+print(a.reshape(-1,6).shape)
+b = np.random.randint(1,100,(3,4))
+print(b.T.shape)
+print(b)
+print(b.flatten())
 # ----------------------------------------------------------------------
 # 题 3：索引与切片（25 分钟）⭐⭐
 # ----------------------------------------------------------------------
@@ -69,8 +84,22 @@ print(M)
 #   3.6 取中心 3x3 子矩阵
 #   3.7 取所有偶数行（0, 2, 4 行）
 #   3.8 取对角线（提示：np.diag(M)）
-
-# TODO
+print("====取第 0 行=====")
+print(M[0])
+print("====取最后一行=====")
+print(M[-1])
+print("====取第 2 列=====")
+print(M[:,1])
+print("====取最后一列=====")
+print(M[:,-1])
+print("===取右下角 2x2 子矩阵======")
+print(M[-2,-2])
+print("====取中心 3x3 子矩阵=====")
+print(M[1:-2,1:-2])
+print("===取所有偶数行======")
+print(M[M%2==0])
+print("====取对角线=====")
+print(np.diag(M))
 
 
 # ----------------------------------------------------------------------
@@ -91,8 +120,22 @@ B = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 #   4.8 找到 A 中最大值的位置（提示：np.argmax + np.unravel_index）
 
 print("\n--- 题 4：矩阵运算 ---")
-# TODO
-
+print("4.1")
+print(A + B)
+print("4.2")
+print(A * B)
+print("4.3")
+print(A @ B)
+print("4.4")
+print(A.T)
+print("4.5")
+print(A.sum())
+print("4.6")
+print(A.sum(axis = 1))
+print("4.7")
+print(A.sum(axis = 0))
+print("4.8")
+print(np.unravel_index(np.argmax(A),A.shape))
 
 # ----------------------------------------------------------------------
 # 题 5：布尔索引（10 分钟）
@@ -106,7 +149,14 @@ scores = np.array([85, 60, 92, 45, 78, 88, 55, 95, 72, 65])
 #   5.3 计算 >= 80 分的占比（百分比）
 #   5.4 把 90 分以上的标记为 'A'，其他为 'B'（用 np.where）
 
-# TODO
+print(scores[scores>=60])
+scores[scores < 60] = 0
+print(scores)
+print(f"{(len(scores[scores>=80])/len(scores)) * 100}%")
+print(np.where(scores >= 90, 'A', 'B'))
+
+
+
 
 
 # ----------------------------------------------------------------------
@@ -117,7 +167,7 @@ print("\n--- 题 6：广播 ---")
 # 6.1 给定一个 (3, 4) 矩阵和一个 (4,) 向量，相加（广播）
 M2 = np.arange(12).reshape(3, 4)
 v = np.array([10, 20, 30, 40])
-# TODO: 计算 M2 + v
+print(M2 + v)
 
 
 # 6.2 数据归一化
@@ -125,7 +175,7 @@ v = np.array([10, 20, 30, 40])
 data = np.random.randn(100, 5) * 10 + 5
 # 用广播实现：每个特征都变成 (x - 均值) / 标准差
 # 提示：用 axis=0 算每列的均值和 std
-# TODO
+print((data - data.mean(axis=0))/data.std(axis=0))
 
 
 # 6.3 余弦相似度
