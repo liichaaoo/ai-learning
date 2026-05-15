@@ -78,11 +78,42 @@ export DASHSCOPE_API_KEY="sk-xxx"
 
 ### 装依赖
 
+推荐使用项目内虚拟环境，避免污染系统 Python：
+
 ```bash
-pip install openai pandas tqdm
+cd /Users/fletcherli/fletcher/AI/AI学习
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install openai pandas tqdm
 ```
 
 > 通义千问兼容 OpenAI 协议，所以用 `openai` 包就行。
+>
+> 如果直接运行时报 `No module named 'openai'`，通常是因为没有先激活 `.venv`。
+
+### 运行本项目
+
+如果你已经把 `DASHSCOPE_API_KEY` 写入 `~/.zshrc`，从任意目录可这样运行：
+
+```bash
+cd /Users/fletcherli/fletcher/AI/AI学习
+source .venv/bin/activate
+source ~/.zshrc
+python path-engineer/01-基础速通/Week1-Python速通/练习/day5_综合项目.py
+```
+
+如果当前已经在 `练习/` 目录：
+
+```bash
+source /Users/fletcherli/fletcher/AI/AI学习/.venv/bin/activate
+source ~/.zshrc
+python day5_综合项目.py
+```
+
+运行成功后会生成：
+
+- `llm_answers.json`
+- `llm_answers.md`
 
 ### 第 1 版：单次调用（5 分钟搞通）
 
