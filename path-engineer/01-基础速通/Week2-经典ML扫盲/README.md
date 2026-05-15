@@ -144,6 +144,17 @@ Kaggle 打比赛会让你：
 
 ---
 
+## 🆘 卡住了去哪查
+
+| 卡住的地方 | 看这里 |
+|-----------|------|
+| sklearn API 不会用 / 参数记不住 | ⭐ [Week2-函数速查.md](./Week2-函数速查.md) |
+| `train_test_split` 顺序错位 / `fit/predict/score` 概念 | [函数速查 §四](./Week2-函数速查.md#四模型通用-apifit--predict--score) |
+| NumPy 操作（axis/广播/形状）| [Week1 §6.5 卡点专题](../Week1-Python速通/Day4-NumPy基础.md#65-卡点专题4-个最容易迷的-api-) |
+| 跨阶段速查 | [99-资源库/NumPy常见疑惑.md](../../../99-资源库/NumPy常见疑惑.md) |
+
+---
+
 ## 🚀 下一步
 
 ✅ 读完这份 README

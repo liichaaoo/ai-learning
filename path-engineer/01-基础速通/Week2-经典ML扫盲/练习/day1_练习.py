@@ -13,13 +13,16 @@ Day 1 练习 · ML 概念与流程
 # 下列场景，哪些该用机器学习，哪些用传统 if/else 更合适？
 # 在每一行后写 "ML" 或 "传统" 并简要说明。
 
+from types import EllipsisType
+
+
 tasks = [
     "根据用户身份证号计算年龄",                    # TODO: 传统 / 正则提取即可
-    "根据用户历史订单预测他会不会流失",             # TODO:
-    "把订单里的商品数量 * 单价算总价",              # TODO:
-    "判断一段新闻是财经/体育/娱乐类",               # TODO:
-    "从 PDF 里提取所有邮箱",                      # TODO:
-    "识别信用卡交易是否是盗刷",                    # TODO:
+    "根据用户历史订单预测他会不会流失",             # TODO: ML / 分类，答案只有会和不会
+    "把订单里的商品数量 * 单价算总价",              # TODO: 传统 / 直接乘法计算就行
+    "判断一段新闻是财经/体育/娱乐类",               # TODO: ML / 分类
+    "从 PDF 里提取所有邮箱",                      # TODO: 传统 / 正则提取
+    "识别信用卡交易是否是盗刷",                    # TODO: ML /分类
 ]
 
 
@@ -29,12 +32,12 @@ tasks = [
 # 下列任务，分别是分类还是回归？
 
 problems = [
-    "预测明天北京的气温",                 # TODO:
-    "判断一封邮件是否是垃圾邮件",           # TODO:
-    "预测某房子的价格",                   # TODO:
-    "把手写数字识别成 0-9",               # TODO:
-    "预测 24 小时内股票涨幅",              # TODO:
-    "判断评论情感（正面/负面/中性）",       # TODO:
+    "预测明天北京的气温",                 # TODO:回归
+    "判断一封邮件是否是垃圾邮件",           # TODO:分类
+    "预测某房子的价格",                   # TODO:回归
+    "把手写数字识别成 0-9",               # TODO:分类
+    "预测 24 小时内股票涨幅",              # TODO:回归
+    "判断评论情感（正面/负面/中性）",       # TODO:分类
 ]
 
 
@@ -44,8 +47,8 @@ problems = [
 # 场景：根据用户的【年龄、收入、性别、城市、历史购买金额】预测【是否会购买会员】
 # 哪些是特征？哪个是标签？
 
-# TODO: 特征是：
-# TODO: 标签是：
+# TODO: 特征是：年龄、收入、性别、城市、历史购买金额
+# TODO: 标签是：是否会购买会员
 
 
 # =============================================================================
@@ -64,25 +67,25 @@ def run_iris_demo():
     X, y = load_iris(return_X_y=True)
     print(f"数据形状：X={X.shape}, y={y.shape}")
 
-    # TODO: 划分训练集和测试集，test_size=0.2，random_state=42
-    # X_train, X_test, y_train, y_test = ???
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    # TODO 4.1: 划分训练集和测试集，test_size=0.2，random_state=42
+    # 提示：用 train_test_split(X, y, test_size=..., random_state=...)
+    # 它返回 4 个值：X_train, X_test, y_train, y_test
+    X_train, X_test, y_train, y_test = train_test_split(X ,y , test_size=0.2, random_state=42)  # ← 在这里写
 
-    # TODO: 创建逻辑回归模型，max_iter=200
-    # model = ???
-    model = LogisticRegression(max_iter=200)
+    # TODO 4.2: 创建逻辑回归模型，max_iter=200
+    # 提示：LogisticRegression(max_iter=...)
+    model = LogisticRegression(max_iter=200)  # ← 在这里写
 
-    # TODO: 用训练集训练模型
-    # model.???
+    # TODO 4.3: 用训练集训练模型
+    # 提示：model.fit(特征, 标签)
+    # 这一步是"学习"——模型在看 X_train 和 y_train 之间的规律
     model.fit(X_train, y_train)
 
-    # TODO: 在测试集上预测
-    # y_pred = model.???
-    y_pred = model.predict(X_test)
+    # TODO 4.4: 在测试集上预测
+    # 提示：model.predict(特征)，返回预测标签
+    y_pred = model.predict(X_test)  # ← 在这里写
 
-    # 计算准确率
+    # 计算准确率（这一步已经写好，不用改）
     acc = accuracy_score(y_test, y_pred)
     print(f"测试集准确率：{acc:.2%}")
     return acc
