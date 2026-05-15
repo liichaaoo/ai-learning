@@ -93,11 +93,11 @@ print(M[:,1])
 print("====取最后一列=====")
 print(M[:,-1])
 print("===取右下角 2x2 子矩阵======")
-print(M[-2,-2])
+print(M[-2:,-2:])
 print("====取中心 3x3 子矩阵=====")
-print(M[1:-2,1:-2])
+print(M[1:4,1:4])
 print("===取所有偶数行======")
-print(M[M%2==0])
+print(M[::2])
 print("====取对角线=====")
 print(np.diag(M))
 
@@ -221,12 +221,10 @@ print((p == true_labels).mean())
 # 沿 axis=1（每行总和应该是 1）
 # 提示：np.exp() 和 .sum(axis=1, keepdims=True)
 print("logits 变成概率（softmax）")
-exp_x = np.exp(logits)
-print(f"exp_x\n{exp_x}")
-probs = exp_x / exp_x.sum(axis = 1,keepdims = True)
-print(f"probs\n{probs}")
-print(probs.sum(axis = 1))
-print(probs.shape)
+x_i = np.exp(logits)
+s = x_i / x_i.sum(axis=1, keepdims=True)
+print(s.sum(axis = 1))
+print(s)
 
 
 # ----------------------------------------------------------------------
@@ -247,7 +245,7 @@ n_classes = 5
 #    [1, 0, 0, 0, 0]]
 # 提示：np.eye(n_classes)[labels] 一行搞定 ⭐
 
-# TODO
+print(np.eye(n_classes)[labels])
 
 
 # ----------------------------------------------------------------------
@@ -265,6 +263,9 @@ y_train = np.random.randint(0, 3, 100)   # 3 类
 # 测试集：5 个 4 维样本，找最近的训练样本预测类别
 X_test = np.random.randn(5, 4)
 
+print("X_train",X_train)
+print("y_train",y_train.shape)
+print("X_test",X_test)
 # 步骤：
 # 9.1 对每个测试样本，计算和所有训练样本的欧氏距离
 #     提示：可以用广播 + .sum(axis=1)
@@ -272,7 +273,16 @@ X_test = np.random.randn(5, 4)
 # 9.2 找最近的训练样本索引（argmin 沿 axis=1）
 # 9.3 用对应的 y_train 作为预测结果
 
-# TODO
+s = X_test[:,np.newaxis,:] - X_train[np.newaxis,:,:]
+d = np.linalg.norm(s,axis = 2)
+print("9.1 对每个测试样本，计算和所有训练样本的欧氏距离")
+print(d)
+y = np.argmin(d,axis=1)
+print("9.2 找最近的训练样本索引（argmin 沿 axis=1）")
+print(y)
+p = y_train[y]
+print("9.3 用对应的 y_train 作为预测结果")
+print(p)
 
 
 print("\n" + "=" * 50)
