@@ -71,10 +71,10 @@
 ## 按知识点精读
 
 ### 1. 监督学习基础
-- **线性回归 / 岭回归 / Lasso**
+- **线性回归 / 岭回归 / Lasso** —— 📝 [详细笔记](../笔记/经典ML/线性回归.md)
   - 西瓜书第 3 章；ESL 第 3 章
   - 推导：最小二乘闭式解、梯度下降解、正则化几何解释（L1 稀疏 vs L2 平滑）
-- **逻辑回归（Logistic Regression）**
+- **逻辑回归（Logistic Regression）** —— 📝 [详细笔记](../笔记/经典ML/逻辑回归.md)
   - 推导：Sigmoid → 最大似然 → 交叉熵损失
   - 对比 Softmax 回归（多分类）
 - **评估指标**：MSE/RMSE/MAE、Accuracy/Precision/Recall/F1、ROC-AUC、PR 曲线
