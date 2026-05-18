@@ -176,9 +176,9 @@ ToolCallback dynamicTool = ToolCallback.builder()
 
 | 实现 | 存储 | 适用 | 局限 |
 |------|------|------|------|
-| `InMemoryChatMemory` | JVM 堆 | 单机 demo / 测试 | 重启丢失 / 不能集群 |
-| `JdbcChatMemory` | MySQL | 中小并发 + 强一致 | 高并发查 DB 慢 |
-| **`RedisChatMemory`**（自实现）| Redis List/ZSet | 生产推荐 | 需要持久化策略 |
+| `MessageWindowChatMemory` | JVM 堆 | 单机 demo / 测试 | 重启丢失 / 不能集群（1.0 起替代旧的 `InMemoryChatMemory`） |
+| `JdbcChatMemoryRepository` | MySQL/PG | 中小并发 + 强一致 | 高并发查 DB 慢 |
+| **`RedisChatMemoryRepository`**（自实现 / starter）| Redis List/ZSet | 生产推荐 | 需要持久化策略 |
 
 **Redis 实现的关键设计**：
 

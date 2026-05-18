@@ -62,7 +62,7 @@
 
     <dependency>
         <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-milvus-store-spring-boot-starter</artifactId>
+        <artifactId>spring-ai-starter-vector-store-milvus</artifactId>
     </dependency>
 
     <!-- 简易 BM25：这里直接用 Lucene -->

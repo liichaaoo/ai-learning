@@ -62,7 +62,7 @@ vectorStore.delete(ids);
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-milvus-store-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-vector-store-milvus</artifactId>
 </dependency>
 
 <dependency>

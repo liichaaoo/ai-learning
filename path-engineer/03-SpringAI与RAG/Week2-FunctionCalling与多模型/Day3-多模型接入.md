@@ -124,13 +124,13 @@ ollama run qwen2.5:7b
 <!-- 已有：OpenAI starter（用于调通义） -->
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-model-openai</artifactId>
 </dependency>
 
 <!-- 新增：Ollama starter -->
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-model-ollama</artifactId>
 </dependency>
 ```
 

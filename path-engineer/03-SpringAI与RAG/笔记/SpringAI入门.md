@@ -88,7 +88,7 @@ EmbeddingResponse response = embeddingModel.embedForResponse(
     <!-- 选一个模型起步：OpenAI / 通义 / Claude / Ollama -->
     <dependency>
         <groupId>org.springframework.ai</groupId>
-        <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+        <artifactId>spring-ai-starter-model-openai</artifactId>
     </dependency>
 </dependencies>
 ```
@@ -242,7 +242,7 @@ spring.ai.openai.chat.options.model: gpt-4o-mini
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-anthropic-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-model-anthropic</artifactId>
 </dependency>
 ```
 
@@ -250,7 +250,7 @@ spring.ai.openai.chat.options.model: gpt-4o-mini
 ```xml
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-model-ollama</artifactId>
 </dependency>
 ```
 配合本地 `ollama run llama3.2` 就能用。

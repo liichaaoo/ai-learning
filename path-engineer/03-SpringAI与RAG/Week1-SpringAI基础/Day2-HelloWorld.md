@@ -61,7 +61,7 @@ cd helloai
 <!-- Spring AI OpenAI Starter (也支持通义千问，因为通义兼容 OpenAI 协议) -->
 <dependency>
     <groupId>org.springframework.ai</groupId>
-    <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+    <artifactId>spring-ai-starter-model-openai</artifactId>
 </dependency>
 ```
 

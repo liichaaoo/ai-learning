@@ -232,19 +232,29 @@ history.add(new UserMessage("我叫什么名字？"));
 
 **Spring AI 推荐**：用 `ChatMemory` 和 `MessageChatMemoryAdvisor`
 
+> ⚠️ Spring AI 1.0.0 GA 起，旧的 `InMemoryChatMemory` 已被移除。
+> 现在统一用 `ChatMemory` 接口，默认实现是 `MessageWindowChatMemory`（按消息条数滑窗）。
+
 ```java
-import org.springframework.ai.chat.memory.InMemoryChatMemory;
-import org.springframework.ai.chat.memory.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 
 @Service
 public class ChatService {
 
     private final ChatClient chatClient;
-    private final InMemoryChatMemory chatMemory = new InMemoryChatMemory();
 
     public ChatService(ChatClient.Builder builder) {
+        // 滑窗默认保留最近 20 条消息
+        ChatMemory memory = MessageWindowChatMemory.builder()
+                .maxMessages(20)
+                .build();
+
         this.chatClient = builder
-                .defaultAdvisors(new MessageChatMemoryAdvisor(chatMemory))
+                .defaultAdvisors(
+                        MessageChatMemoryAdvisor.builder(memory).build()
+                )
                 .build();
     }
 
@@ -252,7 +262,7 @@ public class ChatService {
         return chatClient
             .prompt()
             .user(question)
-            .advisors(a -> a.param("chat_memory_conversation_id", conversationId))
+            .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
             .call()
             .content();
     }
@@ -269,8 +279,8 @@ chatWithMemory("user-456", "我叫什么？");       // AI：我不知道   ← 
 
 ### 4.3 注意
 
-- `InMemoryChatMemory` 进程重启就丢
-- 生产用 **Redis / MySQL 后端的 ChatMemory**（Week 5-6 会做）
+- `MessageWindowChatMemory` 进程重启就丢（数据存在 JVM 内存）
+- 生产用 **Redis / JDBC 后端的 ChatMemoryRepository**（Week 5-6 会做）
 - 历史很长时要做**滑窗**或**摘要**（上下文窗口有限）
 
 ---
