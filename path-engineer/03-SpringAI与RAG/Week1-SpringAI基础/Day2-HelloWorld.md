@@ -320,11 +320,11 @@ Spring AI 解析出 .content()
 
 ## 🎯 今日收官清单
 
-- [ ] 我有一个跑着的 Spring AI Hello World 工程
-- [ ] 我知道 `ChatClient.Builder` 怎么用
-- [ ] 我理解 `.prompt().user().call().content()` 每一步在做什么
-- [ ] 我知道 Spring AI 底层其实是发 HTTP 请求
-- [ ] 我的 Key 不在代码里、在环境变量里
+- [x] 我有一个跑着的 Spring AI Hello World 工程
+- [x] 我知道 `ChatClient.Builder` 怎么用
+- [x] 我理解 `.prompt().user().call().content()` 每一步在做什么
+- [x] 我知道 Spring AI 底层其实是发 HTTP 请求
+- [x] 我的 Key 不在代码里、在环境变量里
 
 ---
 

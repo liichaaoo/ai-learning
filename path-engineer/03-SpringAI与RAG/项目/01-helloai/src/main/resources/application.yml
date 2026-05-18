@@ -19,4 +19,4 @@ spring:
 
 logging:
   level:
-    org.springframework.ai: INFO
+    org.springframework.ai: DEBUG

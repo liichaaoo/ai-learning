@@ -132,7 +132,7 @@ Java 程序员第一次见会懵，但你只要知道：
 ### 4.1 用 curl 测试
 
 ```bash
-curl -N "http://localhost:8080/chat/stream?q=写一首关于秋天的七言绝句"
+curl -N "http://localhost:8080/chat/stream?q=hello"
 ```
 
 **重点**：`-N` 是 `--no-buffer`，让 curl 不要等完整响应再显示。
@@ -353,11 +353,11 @@ public class ChatController {
 
 ## 🎯 今日收官清单
 
-- [ ] 我能说出同步 vs 流式的差别和价值
-- [ ] 我知道 SSE 是什么（和 WebSocket 的区别）
-- [ ] 我会用 Spring AI 的 `.stream()` 和 `Flux<String>`
-- [ ] 我写了一个简单前端能和后端交互
-- [ ] 我理解"首字延迟" 对用户体验的意义
+- [x] 我能说出同步 vs 流式的差别和价值
+- [x] 我知道 SSE 是什么（和 WebSocket 的区别）
+- [x] 我会用 Spring AI 的 `.stream()` 和 `Flux<String>`
+- [x] 我写了一个简单前端能和后端交互
+- [x] 我理解"首字延迟" 对用户体验的意义
 
 ---
 
@@ -375,3 +375,230 @@ public class ChatController {
 ## 🔖 下一步
 
 明天 → [Day 4：Prompt 模板 + System Prompt](./Day4-Prompt工程.md)
+
+---
+
+## 📎 补充：流式响应进阶（TTFT、速率控制、生产实践）
+
+> 这一节回答两个常见疑问：
+> 1. **首字延迟（TTFT）有多重要？怎么优化？**
+> 2. **业务里要不要主动控制流式输出的速率？**
+
+---
+
+### A. 首字延迟（TTFT, Time To First Token）
+
+流式体验的核心指标。用户等 1 秒和等 3 秒的体感差别，比从 5 秒压到 3 秒大得多。
+
+#### A.1 TTFT 由什么决定
+
+| 阶段 | 影响 | 优化手段 |
+|---|---|---|
+| Prompt prefill（模型一次性读完 prompt） | prompt 越长越慢 | 控长度、prompt 缓存、KV cache 复用 |
+| 网络往返 | 跨地域明显 | 服务就近、HTTP/2、连接复用 |
+| 服务端缓冲 | Tomcat、Spring、网关都可能 buffer | 后面 A.3 单独讲 |
+| 业务前置操作 | RAG 检索、鉴权、审计同步阻塞 | 先吐占位、检索改成异步并行 |
+
+#### A.2 "假首字" 技巧（产品级套路）
+
+ChatGPT、Claude、Gemini 都用这个，把感知 TTFT 从 1.5s 压到 100ms 内：
+
+```java
+@GetMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+public Flux<String> chatStream(@RequestParam("q") String q) {
+    return Flux.concat(
+            Flux.just(" "),                           // 立刻 flush 一个空格，欺骗感知
+            chatService.chatStream(q)                 // 真实模型流
+    );
+}
+```
+
+更进一步：在前端先渲染一个"思考中"的动画，收到第一个真实 token 时再替换掉。
+
+#### A.3 关闭中间链路的缓冲（最容易踩坑）
+
+流式失败 9 成是被某层 buffer 了，整段一次性返回。
+
+**Spring Boot 自身**：返回 `Flux<String>` + `produces = TEXT_EVENT_STREAM_VALUE` 默认就是 flush 的，不用配。
+
+**Nginx**（最常见的坑）：
+```nginx
+location /chat/stream {
+    proxy_pass http://backend;
+    proxy_http_version 1.1;
+    proxy_buffering off;          # ⭐ 关键
+    proxy_cache off;              # ⭐ 关键
+    proxy_set_header Connection '';
+    chunked_transfer_encoding on;
+    proxy_read_timeout 300s;      # SSE 是长连接，超时拉长
+}
+```
+
+**响应头里加一行**（绕过部分代理的 buffer，比如 Nginx 的 `X-Accel-Buffering`）：
+```java
+@GetMapping(value = "/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+public ResponseEntity<Flux<String>> chatStream(@RequestParam String q) {
+    return ResponseEntity.ok()
+            .header("X-Accel-Buffering", "no")
+            .header("Cache-Control", "no-cache")
+            .body(chatService.chatStream(q));
+}
+```
+
+---
+
+### B. 要不要主动控制输出速率？
+
+**简短答案：默认不要管，让模型全速吐。少数场景需要"反向节流"——也就是放慢。**
+
+#### B.1 默认全速最好
+
+- 越快越好，用户感知吞吐高、等待短。
+- 前端有自己的渲染节流（CSS 打字机、`requestAnimationFrame` 批量更新），**显示流畅度由前端控制，和后端速率无关**。
+- 后端主动 sleep 既浪费连接，又拉长总耗时。
+
+#### B.2 少数需要主动放慢的场景
+
+| 场景 | 为什么慢 | 做法 |
+|---|---|---|
+| **TTS 边吐边读** | 语音播放速度有上限，token 来太快堆积/丢弃 | 按句号/逗号 buffer 后再发 |
+| **下游有 RPM/TPM 限额** | 防止瞬时打爆配额 | 服务端令牌桶限流 |
+| **演示 / Demo / 录屏** | 真实模型太快看不清 | 加固定 delay |
+| **付费档位差异化**（免费用户限速） | 商业策略 | 网关层限速 |
+| **背压**：客户端慢、网络差 | 防止内存堆积 OOM | Reactor 的 `onBackpressureBuffer` |
+
+#### B.3 Reactor 速率控制写法（备用）
+
+```java
+import java.time.Duration;
+import reactor.core.publisher.BufferOverflowStrategy;
+
+// 1. 每个 token 之间间隔 50ms（Demo 用，生产慎用）
+chatClient.prompt().user(q).stream().content()
+    .delayElements(Duration.ofMillis(50));
+
+// 2. 背压保护：缓冲不超过 256，超了丢最旧
+chatClient.prompt().user(q).stream().content()
+    .onBackpressureBuffer(256, BufferOverflowStrategy.DROP_OLDEST);
+
+// 3. 按句号聚合后再发（适合 TTS / 句子级翻译）
+chatClient.prompt().user(q).stream().content()
+    .bufferUntil(t -> t.contains("。") || t.contains("\n"))
+    .map(list -> String.join("", list));
+```
+
+---
+
+### C. SSE 心跳（防止网关 60s 断连）
+
+许多反向代理会把空闲超过 60s 的连接掐掉。流式里如果模型 prefill 很慢（比如 prompt 巨长），TTFT 就可能踩到这个超时。
+
+加心跳：
+```java
+public Flux<String> chatStream(String q) {
+    Flux<String> heartbeat = Flux.interval(Duration.ofSeconds(15))
+            .map(i -> ":ping");                 // SSE 注释行，浏览器 EventSource 会忽略
+    Flux<String> body = chatService.chatStream(q);
+    return Flux.merge(body, heartbeat).takeUntilOther(body.ignoreElements());
+}
+```
+
+> SSE 协议里以 `:` 开头的行是注释，浏览器 EventSource 自动忽略，但能让中间网关感知到连接活跃。
+
+---
+
+### D. 客户端断线 → 释放后端 LLM 调用（省钱）
+
+用户关页面后，模型还在继续吐，要白白付费几秒到几十秒的 token 钱。
+Reactor 的 `Flux` 会在客户端断开时收到 cancel 信号，业务里可以挂钩：
+
+```java
+public Flux<String> chatStream(String q) {
+    return chatClient.prompt().user(q).stream().content()
+            .doOnCancel(() -> log.info("client disconnected, q={}", q))
+            .doOnError(e -> log.warn("stream error", e))
+            .doFinally(sig -> log.info("stream end, signal={}", sig));
+}
+```
+
+Spring AI 的 OpenAI/DashScope client 在 Flux 被 cancel 时会关闭底层 HTTP 连接，模型那边随之停止生成。**前提是不要在中间加 `.cache()` / `.publish()` 这种把流"留住"的操作符。**
+
+---
+
+### E. 错误也要"流式"地告诉前端
+
+如果半截出错直接抛 500，前端 EventSource 只会收到 `onerror`，看不到原因。
+最佳实践是把错误转成一段 SSE 数据：
+
+```java
+public Flux<String> chatStream(String q) {
+    return chatClient.prompt().user(q).stream().content()
+            .onErrorResume(e -> Flux.just("\n[ERROR] " + safeMsg(e)));
+}
+
+private String safeMsg(Throwable e) {
+    // 别把堆栈、API key、内部地址泄露给前端
+    return e instanceof TimeoutException ? "请求超时，请重试"
+         : "服务繁忙，请稍后再试";
+}
+```
+
+---
+
+### F. 监控三件套（生产必备）
+
+只看"总耗时"会丢失流式的核心体验信息，至少埋三个指标：
+
+| 指标 | 含义 | 报警阈值参考 |
+|---|---|---|
+| **TTFT** | 请求开始到第一个 token 的耗时 | P95 > 2s 报警 |
+| **TPS / Tokens per second** | 每秒输出 token 数 | 模型类型决定，掉一半要查 |
+| **Total latency** | 总耗时 | P95 > 30s 报警 |
+
+Reactor 里实现：
+```java
+public Flux<String> chatStream(String q) {
+    long start = System.currentTimeMillis();
+    AtomicLong firstTokenAt = new AtomicLong(0);
+    AtomicInteger tokens = new AtomicInteger(0);
+
+    return chatClient.prompt().user(q).stream().content()
+            .doOnNext(t -> {
+                if (firstTokenAt.compareAndSet(0, System.currentTimeMillis())) {
+                    metrics.recordTtft(firstTokenAt.get() - start);
+                }
+                tokens.incrementAndGet();
+            })
+            .doFinally(sig -> {
+                long total = System.currentTimeMillis() - start;
+                metrics.recordTotal(total);
+                if (firstTokenAt.get() > 0) {
+                    long gen = total - (firstTokenAt.get() - start);
+                    if (gen > 0) metrics.recordTps(tokens.get() * 1000.0 / gen);
+                }
+            });
+}
+```
+
+---
+
+### G. 一句话总结
+
+> **TTFT 优化是必修课，速率节流是选修课。**
+> 业务默认全速吐字 + 关掉中间 buffer + 加心跳和断线回收，体验和成本就同时拿到了。
+
+---
+
+### 📋 生产 Checklist
+
+```
+[ ] /chat/stream 关闭了 Nginx proxy_buffering
+[ ] 响应头加了 X-Accel-Buffering: no
+[ ] 加了 SSE 心跳防 60s 断连
+[ ] doOnCancel 释放了 LLM 调用（断线省钱）
+[ ] 错误用 SSE 数据返回，不抛 500
+[ ] 埋了 TTFT / TPS / total latency 三个指标
+[ ] 超时设置 .timeout(Duration.ofSeconds(60))
+[ ] 敏感错误信息脱敏后再返回前端
+```
+

@@ -32,14 +32,16 @@ public class ChatService {
     public static final String CONVERSATION_ID_KEY = ChatMemory.CONVERSATION_ID;
 
     private final ChatClient chatClient;
+    private final TimeTool timeTool;
     private final ChatClient chatClientWithMemory;
 
     @Value("classpath:/prompts/customer-service.st")
     private Resource customerServiceTemplate;
 
-    public ChatService(ChatClient.Builder builder) {
+    public ChatService(ChatClient.Builder builder, TimeTool timeTool) {
         // 普通 chatClient
         this.chatClient = builder.build();
+        this.timeTool = timeTool;
 
         // 带记忆的 chatClient：MessageWindowChatMemory 默认保留最近 20 条
         ChatMemory memory = MessageWindowChatMemory.builder()
@@ -57,7 +59,7 @@ public class ChatService {
     public String chat(String question) {
         return chatClient
                 .prompt()
-                .user(question)
+                .user(question).tools(timeTool)
                 .call()
                 .content();
     }
