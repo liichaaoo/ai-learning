@@ -27,6 +27,44 @@ public class ChatController {
         return chatService.chat(question);
     }
 
+    @GetMapping("/chat/agent")
+    public String agent(@RequestParam String q) {
+        return chatService.chatWithTools(q);
+    }
+
+    @GetMapping("/chat/cheap")
+    public String cheapAgent(@RequestParam String q) {
+        return chatService.chatCheap(q);
+    }
+
+    @GetMapping("/chat/cheapTool")
+    public String cheapTool(@RequestParam String q) {
+        return chatService.chatCheapWithTools(q);
+    }
+
+    @GetMapping("/chat/local")
+    public String localAgent(@RequestParam String q) {
+        return chatService.chatLocal(q);
+    }
+
+    @GetMapping("/chat/localTool")
+    public String localTool(@RequestParam String q) {
+        return chatService.chatLocalWithTools(q);
+    }
+
+
+    /**
+     * 流式对话（SSE）
+     * 访问: http://localhost:8080/chat/stream?q=写一首诗
+     * 注意: curl 用 -N 才能看到流式效果
+     */
+    @GetMapping(value = "/chat/deepseek/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chatDeepStream(@RequestParam("q") String question) {
+        return chatService.deepseekChatStream(question);
+    }
+
+
+
     /**
      * 流式对话（SSE）
      * 访问: http://localhost:8080/chat/stream?q=写一首诗

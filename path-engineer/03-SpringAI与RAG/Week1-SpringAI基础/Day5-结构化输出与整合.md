@@ -465,10 +465,15 @@ application-local.yml   # 本地配置
 > **打开你的 01-helloai 工程，能回答下面问题 → Week 1 毕业**
 
 1. `.call()` 和 `.stream()` 的返回类型是什么？
+    call返回Sting ,stream返回Flux<String>
 2. 为啥要 `produces = TEXT_EVENT_STREAM_VALUE`？
+    用于支持服务器和客户端之间的SSE
 3. `.system(spec -> spec.text().param())` 这段代码做了什么？
+    用于设置系统提示，其中param()用于设置模板参数
 4. `.entity(Recipe.class)` 的执行过程？
+    用于设置结构化输出，其中entity()用于设置输出类型
 5. 现在让你给 ChatMemory 换成 Redis 存，思路是什么？
+    用于设置多轮对话记忆，其中ChatMemory用于设置对话记忆，Redis用于设置对话记忆存储
 
 **都能答 = 准备好进入 Week 2（Function Calling + 多模型）**
 

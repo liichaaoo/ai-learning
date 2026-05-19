@@ -33,6 +33,11 @@
 - 字节火山引擎方舟
 - 腾讯混元应用平台
 
+📎 **相关探索专题**：
+- [Java 版 LangGraph（复杂 Agent 编排）](./topic-java-langgraph.md) —— Spring AI 之上的下一步，机会 + 痛点
+- [Java Harness Framework（AgentScope Java）](./topic-java-harness-framework.md) —— 2026 新风口，Spring AI 之上的"驾驭层"补全 ⭐ NEW
+- [Go 语言的企业级 AI 应用现状](./topic-go-ai-stack.md) —— Eino / GenKit / Go 在 AI 栈的真实定位（适合双栈背景）
+
 ---
 
 ### 方向 B：LLM Infra（推理优化）

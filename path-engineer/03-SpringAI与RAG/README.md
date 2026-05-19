@@ -185,6 +185,7 @@
 │   ├── FunctionCalling详解.md
 │   ├── 向量数据库选型.md
 │   ├── RAG调优技巧.md
+│   ├── SpringAI多模态-面试够用版.md   ← 1-2 小时读完，会聊不会做
 │   └── 简历项目数字埋点.md
 └── 项目/
     ├── 01-helloai/                 (Week 1 产出)
